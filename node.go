@@ -4,8 +4,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/graphql-go/graphql"
 	"strings"
+
+	"golang.org/x/net/context"
+
+	"github.com/graphql-go/graphql"
 )
 
 type NodeDefinitions struct {
@@ -17,7 +20,7 @@ type NodeDefinitionsConfig struct {
 	IDFetcher   IDFetcherFn
 	TypeResolve graphql.ResolveTypeFn
 }
-type IDFetcherFn func(id string, info graphql.ResolveInfo) interface{}
+type IDFetcherFn func(ctx context.Context, id string, info graphql.ResolveInfo) interface{}
 type GlobalIDFetcherFn func(obj interface{}, info graphql.ResolveInfo) string
 
 /*
@@ -53,7 +56,7 @@ func NewNodeDefinitions(config NodeDefinitionsConfig) *NodeDefinitions {
 				Description: "The ID of an object",
 			},
 		},
-		Resolve: func(p graphql.GQLFRParams) interface{} {
+		Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 			if config.IDFetcher == nil {
 				return nil
 			}
@@ -61,7 +64,7 @@ func NewNodeDefinitions(config NodeDefinitionsConfig) *NodeDefinitions {
 			if iid, ok := p.Args["id"]; ok {
 				id = fmt.Sprintf("%v", iid)
 			}
-			fetchedID := config.IDFetcher(id, p.Info)
+			fetchedID := config.IDFetcher(ctx, id, p.Info)
 			return fetchedID
 		},
 	}
@@ -117,7 +120,7 @@ func GlobalIDField(typeName string, idFetcher GlobalIDFetcherFn) *graphql.FieldC
 		Name:        "id",
 		Description: "The ID of an object",
 		Type:        graphql.NewNonNull(graphql.ID),
-		Resolve: func(p graphql.GQLFRParams) interface{} {
+		Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 			id := ""
 			if idFetcher != nil {
 				fetched := idFetcher(p.Source, p.Info)

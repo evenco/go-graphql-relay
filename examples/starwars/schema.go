@@ -1,6 +1,8 @@
 package starwars
 
 import (
+	"golang.org/x/net/context"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/relay"
 )
@@ -102,7 +104,7 @@ func init() {
 	 * way we resolve an object that implements node to its type.
 	 */
 	nodeDefinitions = relay.NewNodeDefinitions(relay.NodeDefinitionsConfig{
-		IDFetcher: func(id string, info graphql.ResolveInfo) interface{} {
+		IDFetcher: func(ctx context.Context, id string, info graphql.ResolveInfo) interface{} {
 			// resolve id from global id
 			resolvedId := relay.FromGlobalID(id)
 
@@ -191,7 +193,7 @@ func init() {
 			"ships": &graphql.FieldConfig{
 				Type: shipConnectionDefinition.ConnectionType,
 				Args: relay.ConnectionArgs,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					// convert args map[string]interface into ConnectionArguments
 					args := relay.NewConnectionArguments(p.Args)
 
@@ -230,13 +232,13 @@ func init() {
 		Fields: graphql.FieldConfigMap{
 			"rebels": &graphql.FieldConfig{
 				Type: factionType,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					return GetRebels()
 				},
 			},
 			"empire": &graphql.FieldConfig{
 				Type: factionType,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					return GetEmpire()
 				},
 			},
@@ -274,7 +276,7 @@ func init() {
 		OutputFields: graphql.FieldConfigMap{
 			"ship": &graphql.FieldConfig{
 				Type: shipType,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					if payload, ok := p.Source.(map[string]interface{}); ok {
 						return GetShip(payload["shipId"].(string))
 					}
@@ -283,7 +285,7 @@ func init() {
 			},
 			"faction": &graphql.FieldConfig{
 				Type: factionType,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					if payload, ok := p.Source.(map[string]interface{}); ok {
 						return GetFaction(payload["factionId"].(string))
 					}
@@ -291,7 +293,7 @@ func init() {
 				},
 			},
 		},
-		MutateAndGetPayload: func(inputMap map[string]interface{}, info graphql.ResolveInfo) map[string]interface{} {
+		MutateAndGetPayload: func(ctx context.Context, inputMap map[string]interface{}, info graphql.ResolveInfo) map[string]interface{} {
 			// `inputMap` is a map with keys/fields as specified in `InputFields`
 			// Note, that these fields were specified as non-nullables, so we can assume that it exists.
 			shipName := inputMap["shipName"].(string)

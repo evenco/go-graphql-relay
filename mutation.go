@@ -1,10 +1,12 @@
 package relay
 
 import (
+	"golang.org/x/net/context"
+
 	"github.com/graphql-go/graphql"
 )
 
-type MutationFn func(inputMap map[string]interface{}, info graphql.ResolveInfo) map[string]interface{}
+type MutationFn func(ctx context.Context, inputMap map[string]interface{}, info graphql.ResolveInfo) map[string]interface{}
 
 /*
 A description of a mutation consumable by mutationWithClientMutationId
@@ -64,7 +66,7 @@ func MutationWithClientMutationID(config MutationConfig) *graphql.FieldConfig {
 				Type: graphql.NewNonNull(inputType),
 			},
 		},
-		Resolve: func(p graphql.GQLFRParams) interface{} {
+		Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 			if config.MutateAndGetPayload == nil {
 				return nil
 			}
@@ -74,7 +76,7 @@ func MutationWithClientMutationID(config MutationConfig) *graphql.FieldConfig {
 					input = inputVal
 				}
 			}
-			payload := config.MutateAndGetPayload(input, p.Info)
+			payload := config.MutateAndGetPayload(ctx, input, p.Info)
 			if clientMutationID, ok := input["clientMutationID"]; ok {
 				payload["clientMutationID"] = clientMutationID
 			}

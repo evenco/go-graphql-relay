@@ -1,11 +1,14 @@
 package relay_test
 
 import (
+	"reflect"
+	"testing"
+
+	"golang.org/x/net/context"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/testutil"
 	"github.com/graphql-go/relay"
-	"reflect"
-	"testing"
 )
 
 var connectionTestAllUsers = []interface{}{
@@ -38,7 +41,7 @@ func init() {
 		EdgeFields: graphql.FieldConfigMap{
 			"friendshipTime": &graphql.FieldConfig{
 				Type: graphql.String,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					return "Yesterday"
 				},
 			},
@@ -46,7 +49,7 @@ func init() {
 		ConnectionFields: graphql.FieldConfigMap{
 			"totalCount": &graphql.FieldConfig{
 				Type: graphql.Int,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					return len(connectionTestAllUsers)
 				},
 			},
@@ -57,7 +60,7 @@ func init() {
 	connectionTestUserType.AddFieldConfig("friends", &graphql.FieldConfig{
 		Type: connectionTestConnectionDef.ConnectionType,
 		Args: relay.ConnectionArgs,
-		Resolve: func(p graphql.GQLFRParams) interface{} {
+		Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 			arg := relay.NewConnectionArguments(p.Args)
 			res := relay.ConnectionFromArray(connectionTestAllUsers, arg)
 			return res
@@ -69,7 +72,7 @@ func init() {
 		Fields: graphql.FieldConfigMap{
 			"user": &graphql.FieldConfig{
 				Type: connectionTestUserType,
-				Resolve: func(p graphql.GQLFRParams) interface{} {
+				Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 					return connectionTestAllUsers[0]
 				},
 			},

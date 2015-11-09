@@ -2,11 +2,13 @@ package relay_test
 
 import (
 	"fmt"
+	"reflect"
+	"testing"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/testutil"
 	"github.com/graphql-go/relay"
-	"reflect"
-	"testing"
+	"golang.org/x/net/context"
 )
 
 type user struct {
@@ -33,7 +35,7 @@ var nodeTestUserType *graphql.Object
 var nodeTestPhotoType *graphql.Object
 
 var nodeTestDef = relay.NewNodeDefinitions(relay.NodeDefinitionsConfig{
-	IDFetcher: func(id string, info graphql.ResolveInfo) interface{} {
+	IDFetcher: func(ctx context.Context, id string, info graphql.ResolveInfo) interface{} {
 		if user, ok := nodeTestUserData[id]; ok {
 			return user
 		}

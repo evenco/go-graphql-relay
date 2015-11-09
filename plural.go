@@ -1,6 +1,8 @@
 package relay
 
 import (
+	"golang.org/x/net/context"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -25,7 +27,7 @@ func PluralIdentifyingRootField(config PluralIdentifyingRootFieldConfig) *graphq
 		Description: config.Description,
 		Type:        graphql.NewList(config.OutputType),
 		Args:        inputArgs,
-		Resolve: func(p graphql.GQLFRParams) interface{} {
+		Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 			inputs, ok := p.Args[config.ArgName]
 			if !ok {
 				return nil

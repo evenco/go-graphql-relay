@@ -2,11 +2,14 @@ package relay_test
 
 import (
 	"fmt"
+	"reflect"
+	"testing"
+
+	"golang.org/x/net/context"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/testutil"
 	"github.com/graphql-go/relay"
-	"reflect"
-	"testing"
 )
 
 type photo2 struct {
@@ -29,7 +32,7 @@ var globalIDTestUserType *graphql.Object
 var globalIDTestPhotoType *graphql.Object
 
 var globalIDTestDef = relay.NewNodeDefinitions(relay.NodeDefinitionsConfig{
-	IDFetcher: func(globalID string, info graphql.ResolveInfo) interface{} {
+	IDFetcher: func(ctx context.Context, globalID string, info graphql.ResolveInfo) interface{} {
 		resolvedGlobalId := relay.FromGlobalID(globalID)
 		if resolvedGlobalId == nil {
 			return nil
@@ -57,7 +60,7 @@ var globalIDTestQueryType = graphql.NewObject(graphql.ObjectConfig{
 		"node": globalIDTestDef.NodeField,
 		"allObjects": &graphql.FieldConfig{
 			Type: graphql.NewList(globalIDTestDef.NodeInterface),
-			Resolve: func(p graphql.GQLFRParams) interface{} {
+			Resolve: func(ctx context.Context, p graphql.GQLFRParams) interface{} {
 				return []interface{}{
 					globalIDTestUserData["1"],
 					globalIDTestUserData["2"],
