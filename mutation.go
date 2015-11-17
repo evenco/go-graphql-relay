@@ -3,7 +3,7 @@ package relay
 import (
 	"golang.org/x/net/context"
 
-	"github.com/graphql-go/graphql"
+	"github.com/evenco/go-graphql"
 )
 
 type MutationFn func(ctx context.Context, inputMap map[string]interface{}, info graphql.ResolveInfo) map[string]interface{}

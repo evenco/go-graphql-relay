@@ -2,11 +2,12 @@ package relay_test
 
 import (
 	"fmt"
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/testutil"
-	"github.com/graphql-go/relay"
 	"reflect"
 	"testing"
+
+	"github.com/evenco/go-graphql"
+	"github.com/evenco/go-graphql-relay"
+	"github.com/evenco/go-graphql/testutil"
 )
 
 var pluralTestUserType = graphql.NewObject(graphql.ObjectConfig{

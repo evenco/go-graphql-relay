@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/testutil"
-	"github.com/graphql-go/relay"
+	"github.com/evenco/go-graphql"
+	"github.com/evenco/go-graphql-relay"
+	"github.com/evenco/go-graphql/testutil"
 	"golang.org/x/net/context"
 )
 
