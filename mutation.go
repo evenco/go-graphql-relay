@@ -6,7 +6,7 @@ import (
 	"github.com/evenco/go-graphql"
 )
 
-type MutationFn func(ctx context.Context, inputMap map[string]interface{}, info graphql.ResolveInfo) map[string]interface{}
+type MutationFn func(ctx context.Context, inputMap map[string]interface{}, info graphql.ResolveInfo) interface{}
 
 /*
 A description of a mutation consumable by mutationWithClientMutationId
@@ -77,8 +77,11 @@ func MutationWithClientMutationID(config MutationConfig) *graphql.FieldConfig {
 				}
 			}
 			payload := config.MutateAndGetPayload(ctx, input, p.Info)
-			if clientMutationID, ok := input["clientMutationId"]; ok {
-				payload["clientMutationId"] = clientMutationID
+			if payloadMap, ok := payload.(map[string]interface{}); ok {
+				if clientMutationID, ok := input["clientMutationId"]; ok {
+					payloadMap["clientMutationId"] = clientMutationID
+				}
+				return payloadMap
 			}
 			return payload
 		},
